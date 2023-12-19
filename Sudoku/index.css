@@ -1,0 +1,23 @@
+:root {
+    --cells-size: 4.5rem;
+    --borders-table: 0.1rem solid gray;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.input-container {
+    max-width: fit-content;
+    border: var(--borders-table);
+    transition: 20ms ease;
+}
+
+.input-container input {
+    height: var(--cells-size);
+    width: var(--cells-size);
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: calc(var(--cells-size) - 20%);
+}
