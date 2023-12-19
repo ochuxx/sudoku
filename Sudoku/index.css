@@ -21,3 +21,8 @@ table {
     text-align: center;
     font-size: calc(var(--cells-size) - 20%);
 }
+
+.input-container input:read-only {
+    color: rgb(113, 113, 113);
+    background-color: rgb(218, 218, 218);
+}
