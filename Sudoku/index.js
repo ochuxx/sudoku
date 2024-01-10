@@ -30,6 +30,7 @@ for (let i = 0; i < 9; i++) {
         inputNumber.setAttribute("row", i + 1);
         inputNumber.setAttribute("column", j + 1);
         inputNumber.setAttribute("box", boxId);
+        inputNumber.readOnly = true;
         //Agregando bordes gruesos para visualización
         if (j == 0 || j == 3 || j == 6) {
             td.style.borderLeft = thickBorder;
@@ -58,9 +59,41 @@ const tds = document.querySelectorAll(".input-container");
 const inputs = document.querySelectorAll(".input-container input");
 let currentInput = inputs[0];
 
-//---Agregando números aleatorios en celdas---
+//Quitar valores de algunas celdas para resolverlos
+function deleteSomeValues() {
+    var numValues = 81 - 25;
+    for (let i = 0; i < numValues; i++) {
+        let input = inputs[Math.floor(Math.random() * inputs.length)];
+        if (input.value != "") {
+            input.value = "";
+            input.readOnly = false;
+            continue;
+        }
+        i--;
+    }
+}
+
+//---Agregar números aleatorios en celdas---
 function setRandomValues() {
     var options = [];
+    var doSudokuAgain = false;
+
+    //Borrar valores de input antes de hacer cambios
+    inputs.forEach(element => {
+        element.value = "";
+    })
+
+    //Comparar demás valores con el input actual para evitar repetir el valor
+    function comparateValues(nodes, mainNode) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].value == mainNode.value && nodes[i].id != mainNode.id) {
+                options.splice(options.indexOf(mainNode.value), 1);
+                mainNode.value = options[Math.floor(Math.random() * options.length)];
+                return false;
+            }
+        }
+        return true;
+    }
 
     function detectRepeat(node) {
         let column = node.attributes["column"].value;
@@ -70,28 +103,18 @@ function setRandomValues() {
         let columns = document.querySelectorAll(`[column="${column}"]`);
         let boxes = document.querySelectorAll(`[box="${box}"]`);
 
-        for (let i = 0; i < boxes.length; i++) {
-            if (boxes[i].value == node.value && boxes[i].id != node.id) {
-                options.splice(options.indexOf(node.value), 1);
-                node.value = options[Math.floor(Math.random() * options.length)];
-                return;
-            }
+        //Comparar si el número puesto aleatoriamente ya existe en la fila, columna o casilla
+        let approveRow = comparateValues(rows, node);
+        if (!approveRow) {
+            return false;
         }
-
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i].value == node.value && rows[i].id != node.id) {
-                options.splice(options.indexOf(node.value), 1);
-                node.value = options[Math.floor(Math.random() * options.length)];
-                return;
-            }
+        let approveColumn = comparateValues(columns, node);
+        if (!approveColumn) {
+            return false;
         }
-
-        for (let i = 0; i < columns.length; i++) {
-            if (columns[i].value == node.value && columns[i].id != node.id) {
-                options.splice(options.indexOf(node.value), 1);
-                node.value = options[Math.floor(Math.random() * options.length)];
-                return;
-            }
+        let approveBox = comparateValues(boxes, node);
+        if (!approveBox) {
+            return false;
         }
 
         return true;
@@ -110,20 +133,15 @@ function setRandomValues() {
         }
 
         if (options == false) {
-            return setRandomValues();
+            doSudokuAgain = true;
         }
     })
 
-    //while (numCells > 0) {
-        //let node = document.querySelector(`[row="${rowSelected}"][column="${columnSelected}"]`);
-        
-        //if (node.value != "") {
-            //continue;
-        //}
+    if (doSudokuAgain) {
+        return setRandomValues();
+    }
 
-        //node.value = valueSelected;
-        //numCells--;
-    //}
+    return deleteSomeValues();
 }
 
 //--Quitar y poner foco en x celda--
