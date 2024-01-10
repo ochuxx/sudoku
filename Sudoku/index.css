@@ -1,5 +1,5 @@
 :root {
-    --cells-size: 4.5rem;
+    --cells-size: 4.5rem; /*Cambia el tamaño del cuadro del sudoku*/
     --borders-table: 0.1rem solid gray;
 }
 

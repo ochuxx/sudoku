@@ -1,20 +1,35 @@
 const tableBody = document.querySelector("#tableBody");
 const validValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const arrows = [["ArrowUp", "row", "-"], ["ArrowDown", "row", "+"], ["ArrowLeft", "column", "-"], ["ArrowRight", "column", "+"]];
+let incrementId = 0;
 
 //--Crear inputs con sus random values--
 for (let i = 0; i < 9; i++) {
+    let boxId;
+
+    if (i >= 0 && i <= 2) {
+        boxId = 1;
+    }
+    if (i >= 3 && i <= 5) {
+        boxId = 4;
+    }
+    if (i >= 6 && i <= 8) {
+        boxId = 7;
+    }
 
     let tr = document.createElement("tr");
-    let thickBorder = "0.3rem solid black"
+    let thickBorder = "0.3rem solid black";
 
     for (let j = 0; j < 9; j++) {
+        incrementId++;
         let td = document.createElement("td");
         let inputNumber = document.createElement("input");
         td.className = "input-container";
         inputNumber.type = "text";
+        inputNumber.id = `cell${incrementId}`;
         inputNumber.setAttribute("row", i + 1);
         inputNumber.setAttribute("column", j + 1);
+        inputNumber.setAttribute("box", boxId);
         //Agregando bordes gruesos para visualización
         if (j == 0 || j == 3 || j == 6) {
             td.style.borderLeft = thickBorder;
@@ -27,6 +42,10 @@ for (let i = 0; i < 9; i++) {
         }
         if (i == 8) {
             td.style.borderBottom = thickBorder;
+        }
+        //Ajustando id de caja
+        if (j == 2 || j == 5) {
+            boxId ++;
         }
         td.append(inputNumber);
         tr.append(td);
@@ -46,33 +65,53 @@ function setRandomValues() {
     function detectRepeat(node) {
         let column = node.attributes["column"].value;
         let row = node.attributes["row"].value;
+        let box = node.attributes["box"].value;
         let rows = document.querySelectorAll(`[row="${row}"]`);
         let columns = document.querySelectorAll(`[column="${column}"]`);
+        let boxes = document.querySelectorAll(`[box="${box}"]`);
 
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i].value == node.value && rows[i].attributes["column"].value != column) {
+        for (let i = 0; i < boxes.length; i++) {
+            if (boxes[i].value == node.value && boxes[i].id != node.id) {
                 options.splice(options.indexOf(node.value), 1);
                 node.value = options[Math.floor(Math.random() * options.length)];
-                i = 0;
+                return;
+            }
+        }
+
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].value == node.value && rows[i].id != node.id) {
+                options.splice(options.indexOf(node.value), 1);
+                node.value = options[Math.floor(Math.random() * options.length)];
+                return;
             }
         }
 
         for (let i = 0; i < columns.length; i++) {
-            if (columns[i].value == node.value && columns[i].attributes["row"].value != row) {
+            if (columns[i].value == node.value && columns[i].id != node.id) {
                 options.splice(options.indexOf(node.value), 1);
                 node.value = options[Math.floor(Math.random() * options.length)];
-                i = 0;
+                return;
             }
         }
 
-        return;
+        return true;
     }
 
     inputs.forEach(element => {
         options = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        let canpass = false;
         let valueSelected = options[Math.floor(Math.random() * options.length)];
         element.value = valueSelected;
-        detectRepeat(element, options);
+        for (let i = 0; i < 9; i++) {
+            canpass = detectRepeat(element);
+            if (canpass) {
+                break;
+            }
+        }
+
+        if (options == false) {
+            return setRandomValues();
+        }
     })
 
     //while (numCells > 0) {
