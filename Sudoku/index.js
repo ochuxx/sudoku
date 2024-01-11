@@ -18,7 +18,7 @@ for (let i = 0; i < 9; i++) {
     }
 
     let tr = document.createElement("tr");
-    let thickBorder = "0.3rem solid black";
+    let thickBorder = "calc(var(--cells-size) * (8 / 100)) solid black";
 
     for (let j = 0; j < 9; j++) {
         incrementId++;
@@ -27,6 +27,7 @@ for (let i = 0; i < 9; i++) {
         td.className = "input-container";
         inputNumber.type = "text";
         inputNumber.id = `cell${incrementId}`;
+        inputNumber.setAttribute("is-valid-num", "none");
         inputNumber.setAttribute("row", i + 1);
         inputNumber.setAttribute("column", j + 1);
         inputNumber.setAttribute("box", boxId);
@@ -88,7 +89,8 @@ function setRandomValues() {
         for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].value == mainNode.value && nodes[i].id != mainNode.id) {
                 options.splice(options.indexOf(mainNode.value), 1);
-                mainNode.value = options[Math.floor(Math.random() * options.length)];
+                let numSelected = options[Math.floor(Math.random() * options.length)];
+                mainNode.value = numSelected;
                 return false;
             }
         }
@@ -141,6 +143,10 @@ function setRandomValues() {
         return setRandomValues();
     }
 
+    inputs.forEach(element => {
+        element.setAttribute("correct-number", element.value);
+    });
+
     return deleteSomeValues();
 }
 
@@ -153,6 +159,13 @@ function controlFocus(node) {
     node.style.outline = "0.22rem solid blue";
 }
 
+//--Colorear según el focus--
+function focusColor(nodes, color) {
+    nodes.forEach(element => {
+        element.style.backgroundColor = color;
+    })
+}
+
 //--Animación al seleccionar celda y validación--
 inputs.forEach(element => {
     element.addEventListener("focus", e => {
@@ -160,18 +173,32 @@ inputs.forEach(element => {
         currentInput = e.target;
     })
 
-    element.addEventListener("keypress", e => {
+    element.addEventListener("keydown", e => {
         e.preventDefault();
         if (e.target.readOnly) {
+            return;
+        }
+
+        if (e.key == "Backspace") {
+            element.value = "";
+            element.setAttribute("is-valid-num", "none");
             return;
         }
 
         validValues.forEach(number => {
             if (e.key == number) {
                 element.value = number;
+
+                //Verificar si el valor puesto es el correcto, según como sea cambia el estilo
+                if (String(number) == element.getAttribute("correct-number")) {
+                    element.setAttribute("is-valid-num", "true");
+                    return;
+                }
+
+                element.setAttribute("is-valid-num", "false");
                 return;
             }
-        })
+        });
     })
 })
 
@@ -202,6 +229,24 @@ window.addEventListener("keydown", e => {
             }
 
             node = document.querySelector(selected);
+
+            //Cambiar color de filas, columnas y casilla según la celda donde se encuentre
+                //---Borrar anteriores colores del antiguo focus
+            let oldRows = document.querySelectorAll(`[row='${currentInput.getAttribute("row")}']`);
+            let oldColumns = document.querySelectorAll(`[column='${currentInput.getAttribute("column")}']`);
+            let oldBoxes = document.querySelectorAll(`[box='${currentInput.getAttribute("box")}']`);
+            focusColor(oldRows, "transparent");
+            focusColor(oldColumns, "transparent");
+            focusColor(oldBoxes, "transparent");
+
+                //---Colocar colores en nuevo focus
+            let rows = document.querySelectorAll(`[row='${node.getAttribute("row")}']`);
+            let columns = document.querySelectorAll(`[column='${node.getAttribute("column")}']`);
+            let boxes = document.querySelectorAll(`[box='${node.getAttribute("box")}']`);
+            focusColor(rows, "blue");
+            focusColor(columns, "blue");
+            focusColor(boxes, "blue");
+
             node.focus();
         }
     })
