@@ -151,12 +151,36 @@ function setRandomValues() {
 }
 
 //--Quitar y poner foco en x celda--
-function controlFocus(node) {
+function controlFocus(parentNode, oldInput, newInput) {
+    let focusCellColor = "#CACFD2";
     inputs.forEach(element => {
         element.offsetParent.style.outline = "none";
+        element.style.backgroundColor = "white";
     })
 
-    node.style.outline = "0.22rem solid blue";
+    //Cambiar color de filas, columnas y casilla según la celda donde se encuentre
+    //---Colocar colores en nuevo focus
+    let rows = document.querySelectorAll(`[row='${newInput.getAttribute("row")}']`);
+    let columns = document.querySelectorAll(`[column='${newInput.getAttribute("column")}']`);
+    let boxes = document.querySelectorAll(`[box='${newInput.getAttribute("box")}']`);
+    focusColor(rows, "rgb(214, 234, 248 )");
+    focusColor(columns, "rgb(214, 234, 248 )");
+    focusColor(boxes, "rgb(214, 234, 248 )");
+
+    //Colocar indicador del focus
+    parentNode.style.outline = "0.22rem solid blue";
+    newInput.style.backgroundColor = focusCellColor;
+
+    //Indicar los valores iguales en el sudoku con un background
+    setTimeout(() => {
+        if (newInput.value != "") {
+            inputs.forEach(element => {
+                if (element.value == newInput.value) {
+                    element.style.backgroundColor = focusCellColor;
+                }
+            });
+        }
+    }, 5);
 }
 
 //--Colorear según el focus--
@@ -169,7 +193,7 @@ function focusColor(nodes, color) {
 //--Animación al seleccionar celda y validación--
 inputs.forEach(element => {
     element.addEventListener("focus", e => {
-        controlFocus(e.target.offsetParent);
+        controlFocus(e.target.offsetParent, currentInput, e.target);
         currentInput = e.target;
     })
 
@@ -229,24 +253,6 @@ window.addEventListener("keydown", e => {
             }
 
             node = document.querySelector(selected);
-
-            //Cambiar color de filas, columnas y casilla según la celda donde se encuentre
-                //---Borrar anteriores colores del antiguo focus
-            let oldRows = document.querySelectorAll(`[row='${currentInput.getAttribute("row")}']`);
-            let oldColumns = document.querySelectorAll(`[column='${currentInput.getAttribute("column")}']`);
-            let oldBoxes = document.querySelectorAll(`[box='${currentInput.getAttribute("box")}']`);
-            focusColor(oldRows, "transparent");
-            focusColor(oldColumns, "transparent");
-            focusColor(oldBoxes, "transparent");
-
-                //---Colocar colores en nuevo focus
-            let rows = document.querySelectorAll(`[row='${node.getAttribute("row")}']`);
-            let columns = document.querySelectorAll(`[column='${node.getAttribute("column")}']`);
-            let boxes = document.querySelectorAll(`[box='${node.getAttribute("box")}']`);
-            focusColor(rows, "blue");
-            focusColor(columns, "blue");
-            focusColor(boxes, "blue");
-
             node.focus();
         }
     })
