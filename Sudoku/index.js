@@ -166,9 +166,9 @@ function controlFocus(parentNode, newInput) {
     let columns = document.querySelectorAll(`[column='${newInput.getAttribute("column")}']`);
     let boxes = document.querySelectorAll(`[box='${newInput.getAttribute("box")}']`);
     let cellsInFocus = [rows, columns, boxes];
-    cellsInFocus.forEach(cells => 
-        focusColor(cells, "rgb(214, 234, 248 )")
-    );
+    for (let cells of cellsInFocus) {
+        focusColor(cells, "rgb(214, 234, 248 )");
+    }
 
     //Colocar indicador del focus
     parentNode.style.outline = "0.22rem solid blue";
@@ -196,7 +196,12 @@ function focusColor(nodes, color) {
 //--Controlar las vidas al equivocarse--
 function modLifes() {
     lifes--;
-    lifesSpan.innerHTML = String(lifes);
+    lifesSpan.innerHTML = "";
+    for (let i = 0; i < lifes; i++) {
+        let iElement = document.createElement("i");
+        iElement.className = 'fa-solid fa-heart';
+        lifesSpan.append(iElement);
+    }
 
     if (lifes <= 0) {
         setTimeout(() => {
