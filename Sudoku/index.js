@@ -1,7 +1,9 @@
 const tableBody = document.querySelector("#tableBody");
+const lifesSpan = document.querySelector("#num-lifes");
 const validValues = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const arrows = [["ArrowUp", "row", "-"], ["ArrowDown", "row", "+"], ["ArrowLeft", "column", "-"], ["ArrowRight", "column", "+"]];
 let incrementId = 0;
+let lifes = 4;
 
 //--Crear inputs con sus random values--
 for (let i = 0; i < 9; i++) {
@@ -151,7 +153,7 @@ function setRandomValues() {
 }
 
 //--Quitar y poner foco en x celda--
-function controlFocus(parentNode, oldInput, newInput) {
+function controlFocus(parentNode, newInput) {
     let focusCellColor = "#CACFD2";
     inputs.forEach(element => {
         element.offsetParent.style.outline = "none";
@@ -163,9 +165,10 @@ function controlFocus(parentNode, oldInput, newInput) {
     let rows = document.querySelectorAll(`[row='${newInput.getAttribute("row")}']`);
     let columns = document.querySelectorAll(`[column='${newInput.getAttribute("column")}']`);
     let boxes = document.querySelectorAll(`[box='${newInput.getAttribute("box")}']`);
-    focusColor(rows, "rgb(214, 234, 248 )");
-    focusColor(columns, "rgb(214, 234, 248 )");
-    focusColor(boxes, "rgb(214, 234, 248 )");
+    let cellsInFocus = [rows, columns, boxes];
+    cellsInFocus.forEach(cells => 
+        focusColor(cells, "rgb(214, 234, 248 )")
+    );
 
     //Colocar indicador del focus
     parentNode.style.outline = "0.22rem solid blue";
@@ -190,10 +193,23 @@ function focusColor(nodes, color) {
     })
 }
 
+//--Controlar las vidas al equivocarse--
+function modLifes() {
+    lifes--;
+    lifesSpan.innerHTML = String(lifes);
+
+    if (lifes <= 0) {
+        setTimeout(() => {
+            alert("Has perdido");
+            return location.reload();
+        }, 5);
+    }
+}
+
 //--Animación al seleccionar celda y validación--
 inputs.forEach(element => {
     element.addEventListener("focus", e => {
-        controlFocus(e.target.offsetParent, currentInput, e.target);
+        controlFocus(e.target.offsetParent, e.target);
         currentInput = e.target;
     })
 
@@ -220,6 +236,7 @@ inputs.forEach(element => {
                 }
 
                 element.setAttribute("is-valid-num", "false");
+                modLifes();
                 return;
             }
         });
@@ -260,3 +277,4 @@ window.addEventListener("keydown", e => {
 
 inputs[0].focus();
 setRandomValues();
+modLifes();

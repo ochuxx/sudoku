@@ -11,11 +11,11 @@ body {
     align-items: center;
 }
 
-main {
+.sudoku {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    margin-top: 5rem;
 }
 
 table {
