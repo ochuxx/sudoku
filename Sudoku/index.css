@@ -9,6 +9,15 @@ body {
     margin: 0;
     padding: 0;
     align-items: center;
+    background-color: gray;
+    height: 100vh;
+}
+
+main {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    height: 100%;
+    align-items: center;
 }
 
 .sudoku {
@@ -26,7 +35,7 @@ table {
 .input-container {
     max-width: fit-content;
     border: var(--borders-table);
-    transition: 20ms ease;
+    transition: 30ms ease;
 }
 
 .input-container input {
@@ -52,7 +61,14 @@ table {
     color: #C0392B;
 }
 
+.options {
+    display: flex;
+    font-size: 3rem;
+    align-items: center;
+    justify-content: center;
+}
+
 .fa-heart {
     color: red;
-    margin: 0 0.2rem;
+    margin: 0 .5rem;
 }

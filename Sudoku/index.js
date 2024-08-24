@@ -283,3 +283,7 @@ window.addEventListener("keydown", e => {
 inputs[0].focus();
 setRandomValues();
 modLifes();
+
+
+// Hace falta notas
+// Hace falta que se guarde partida en LocalStorage
